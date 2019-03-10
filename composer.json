@@ -1,0 +1,36 @@
+{
+  "name": "igniphp/annotations",
+  "description": "",
+  "keywords": [
+    "annotations",
+    "docblock",
+    "php"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dawid <krac> Kraczkowski",
+      "email": "dawid.kraczkowski@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "ext-mbstring" : "*",
+    "igniphp/validation": ">=2.1",
+    "igniphp/exception": ">=1.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": ">=8.0",
+    "mockery/mockery": ">=1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Igni\\Annotation\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "IgniTest\\Annotation\\": "tests/"
+    }
+  }
+}
