@@ -3,24 +3,16 @@
 namespace IgniTest\Annotation\Fixtures\Annotations;
 
 use Igni\Annotation\Annotation;
-use Igni\Annotation\Enum;
 use Igni\Annotation\Target;
 
 /**
  * @Annotation()
  * @Target(Target::TARGET_CLASS)
  */
-class EnumExample
+class MetaClass
 {
     /**
-     * @Enum(1, 2, 3)
-     * @var int[]
+     * @var
      */
-    public $enum = [];
-
-    public function getValues() : array
-    {
-        return $this->enum;
-    }
+    public $properties = [];
 }
-

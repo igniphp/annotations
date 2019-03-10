@@ -2,14 +2,14 @@
 
 namespace Igni\Annotation\MetaData;
 
-use Igni\Annotation\Annotation\Annotation;
-use Igni\Annotation\Annotation\Enum;
-use Igni\Annotation\Annotation\NoValidate;
-use Igni\Annotation\Annotation\Required;
-use Igni\Annotation\Annotation\Target;
+use Igni\Annotation\Annotation;
+use Igni\Annotation\Enum;
+use Igni\Annotation\NoValidate;
+use Igni\Annotation\Required;
+use Igni\Annotation\Target;
 use Igni\Annotation\Context;
 use Igni\Annotation\Parser;
-use Igni\Exception\ParserException;
+use Igni\Annotation\Exception\ParserException;
 use ReflectionClass;
 use ReflectionProperty;
 

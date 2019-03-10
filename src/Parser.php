@@ -2,11 +2,6 @@
 
 namespace Igni\Annotation;
 
-use Igni\Annotation\Annotation;
-use Igni\Annotation\Enum;
-use Igni\Annotation\NoValidate;
-use Igni\Annotation\Required;
-use Igni\Annotation\Target;
 use Igni\Annotation\MetaData\MetaDataExtractor;
 use Igni\Annotation\Exception\ParserException;
 use ReflectionClass;
