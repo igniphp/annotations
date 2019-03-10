@@ -14,7 +14,13 @@ class EnumExample
 {
     /**
      * @Enum(1, 2, 3)
+     * @var int[]
      */
-    public $enum;
+    public $enum = [];
+
+    public function getValues() : array
+    {
+        return $this->enum;
+    }
 }
 
