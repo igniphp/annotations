@@ -37,7 +37,7 @@ final class ReflectorImportsTest extends TestCase
         );
     }
 
-    public function testReflectionMethod() : void
+    public function testReflectionMethodImports() : void
     {
         $imports = new ReflectorImports(new ReflectionMethod(EnumExample::class, 'getValues'));
         self::assertSame(

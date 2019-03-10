@@ -2,13 +2,13 @@
 
 namespace Igni\Annotation;
 
-use Igni\OpenApi\Annotation\Parser\Annotation\Annotation;
-use Igni\OpenApi\Annotation\Parser\Annotation\Enum;
-use Igni\OpenApi\Annotation\Parser\Annotation\NoValidate;
-use Igni\OpenApi\Annotation\Parser\Annotation\Required;
-use Igni\OpenApi\Annotation\Parser\Annotation\Target;
-use Igni\OpenApi\Annotation\Parser\MetaData\MetaDataExtractor;
-use Igni\OpenApi\Exception\ParserException;
+use Igni\Annotation\Annotation;
+use Igni\Annotation\Enum;
+use Igni\Annotation\NoValidate;
+use Igni\Annotation\Required;
+use Igni\Annotation\Target;
+use Igni\Annotation\MetaData\MetaDataExtractor;
+use Igni\Annotation\Exception\ParserException;
 use ReflectionClass;
 
 class Parser

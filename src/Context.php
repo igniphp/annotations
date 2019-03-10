@@ -2,7 +2,6 @@
 
 namespace Igni\Annotation;
 
-use Igni\OpenApi\Annotation\Parser\Annotation\Target;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;

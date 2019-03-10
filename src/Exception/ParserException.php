@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Igni\OpenApi\Exception;
+namespace Igni\Annotation\Exception;
 
 use Igni\Annotation\Context;
 use Igni\Annotation\Token;
@@ -14,8 +14,7 @@ final class ParserException extends LogicException
         $context = $context->getSymbol() ?: (string) $context;
         $message = "Unexpected `{$token}` in {$context} at index: {$token->getPosition()}.";
 
-        return new class($message) extends ParserException implements UnexpectedValueException {
-        };
+        return new self($message);
     }
 
     public static function forUnknownAnnotationClass(string $name, Context $context) : Throwable
@@ -23,8 +22,7 @@ final class ParserException extends LogicException
         $message = "Could not find annotation class {$name} used in {$context}." .
             "Please check your composer settings, or use Parser::registerNamespace.";
 
-        return new class($message) extends ParserException implements RuntimeException {
-        };
+        return new self($message);
     }
 
     public static function forUsingNonAnnotationClassAsAnnotation(string $class, Context $context) : Throwable
@@ -32,37 +30,12 @@ final class ParserException extends LogicException
         $message = "Used {$class} as annotation - class is not marked as annotation. Used in {$context}." .
             "Please add `@Annotation` annotation to mark class as annotation class.";
 
-        return new class($message) extends ParserException implements RuntimeException {
-        };
-    }
-
-    public static function forPropertyValidationFailure(Context $context, array $schema, string $property) : Throwable
-    {
-        $message = "Property {$property} has failed validation";
-        if ($schema['enum']) {
-            $message .= ', must be one of: ' . implode(',', $schema['enum']);
-        } else {
-            $type = $schema['type'];
-            if (is_array($type)) {
-                $type = end($schema['type']) . '[]';
-            }
-
-            $message .= ", must be type of: {$type}";
-        }
-
-        if ($schema['required']) {
-            $message .= ' and is required';
-        }
-        $message .= ". Defined in {$context}";
-
-        return new class($message) extends ParserException implements RuntimeException {
-        };
+        return new self($message);
     }
 
     public static function forUndefinedConstant(Context $context, string $name) : Throwable
     {
         $message = "Using undefined constant `{$name}` in {$context}";
-        return new class($message) extends ParserException implements RuntimeException {
-        };
+        return new self($message);
     }
 }
