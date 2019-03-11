@@ -2,7 +2,7 @@
 
 namespace Igni\Annotation;
 
-use Igni\OpenApi\Exception\TokenizerException;
+use Igni\Annotation\Exception\TokenizerException;
 use Iterator;
 
 use function count;

@@ -13,31 +13,54 @@ use Igni\Annotation\Exception\ParserException;
 use ReflectionClass;
 use ReflectionProperty;
 
-class MetaDataExtractor
+class MetaData
 {
+    public const BUILT_IN = [
+        Annotation::class => 1,
+        Target::class => 1,
+        Required::class => 1,
+        Enum::class => 1,
+        NoValidate::class => 1,
+    ];
     private $parser;
+    private $context;
+    private $target = [Target::TARGET_ALL];
+    private $validate = true;
+    private $hasConstructor = false;
+    private $isAnnotation = false;
+    private $className;
 
-    public function __construct(Parser $parser)
+    public function __construct(string $class, Parser $parser = null)
     {
-        $this->parser = $parser;
+        $this->className = $class;
+        $this->parser = $parser ?? new Parser();
+        $reflection = new ReflectionClass($class);
+        $this->context = Context::fromReflectionClass($reflection);
+
+        // Skip collecting built in annotations meta data, its not needed.
+        if (isset(self::BUILT_IN[$class])) {
+            return;
+        }
+
+        $this->collect($reflection);
     }
 
-    public function extract(ReflectionClass $class, Context $context) : array
+    private function collect(ReflectionClass $class) : void
     {
-        $annotationContext = Context::fromReflectionClass($class);
-        $annotations = $this->parser->parse($class->getDocComment(), $annotationContext);
+        $this->className = $class->getName();
+        $this->classNamespace = $class->getNamespaceName();
+        $this->hasConstructor = $class->getConstructor() !== null;
 
-        $metaData = [
-            'target' => [Target::TARGET_ALL],
-            'validate' => true,
-            'has_constructor' => $class->getConstructor() !== null,
-            'is_annotation' => false,
-        ];
+        $this->collectClassMeta($class);
+    }
 
+    private function collectClassMeta(ReflectionClass $class)
+    {
+        $annotations = $this->parser->parse($class->getDocComment(), $this->context);
         foreach ($annotations as $annotation) {
             switch (get_class($annotation)) {
                 case Annotation ::class:
-                    $metaData['is_annotation'] = true;
+                    $this->isAnnotation = true;
                     break;
                 case Target::class:
                     $valid = false;
@@ -48,7 +71,7 @@ class MetaDataExtractor
                     }
                     if (!$valid) {
                         throw ParserException::forPropertyValidationFailure(
-                            $annotationContext,
+                            $this->context,
                             ['enum' => Target::TARGETS],
                             $annotation->value
                         );
@@ -60,45 +83,49 @@ class MetaDataExtractor
                     break;
             }
         }
-        return $metaData;
+
         $properties = $class->getProperties(ReflectionProperty::IS_PUBLIC);
 
         foreach ($properties as $property) {
-            $propertyContext = Context::fromReflectionProperty($property);
-            $docComment = $property->getDocComment();
-            $name = $property->getName();
-            $type = $this->parseDeclaredType($docComment, $context);
-            $required = false;
-            $validate = true;
-            $enum = null;
+            $this->collectPropertyMeta($property);
+        }
+    }
 
-            $annotations = $this->parser->parse($docComment, $propertyContext);
-            foreach ($annotations as $annotation) {
-                switch (get_class($annotation)) {
-                    case Enum::class:
-                        $enum = $annotation->value;
-                        break;
-                    case Required::class:
-                        $required = (bool) $annotation->value;
-                        break;
-                    case NoValidate::class:
-                        $validate = (bool) $annotation->value;
-                        break;
-                }
-            }
+    private function collectPropertyMeta(ReflectionProperty $property) : void
+    {
+        $propertyContext = Context::fromReflectionProperty($property);
+        $docComment = $property->getDocComment();
+        $name = $property->getName();
+        $type = $this->parseDeclaredType($docComment, $this->context);
+        $required = false;
+        $validate = true;
+        $enum = null;
 
-            $attribute = new Attribute($name, $type, $required);
-            if (!$validate) {
-                $attribute->disableValidation();
+        $annotations = $this->parser->parse($docComment, $propertyContext);
+        foreach ($annotations as $annotation) {
+            switch (get_class($annotation)) {
+                case Enum::class:
+                    $enum = $annotation->value;
+                    break;
+                case Required::class:
+                    $required = (bool) $annotation->value;
+                    break;
+                case NoValidate::class:
+                    $validate = (bool) $annotation->value;
+                    break;
             }
-            if ($enum) {
-                $attribute->enumerate($enum);
-            }
-            $metaData['properties'][$name] = $attribute;
         }
 
-        return $metaData;
+        $attribute = new Attribute($name, $type, $required);
+        if (!$validate) {
+            $attribute->disableValidation();
+        }
+        if ($enum) {
+            $attribute->enumerate($enum);
+        }
+        $metaData['properties'][$name] = $attribute;
     }
+
 
     private function parseDeclaredType(string $docComment, Context $context)
     {
@@ -122,7 +149,7 @@ class MetaDataExtractor
                     $type = [$type];
                 }
                 break;
-            case ($class = $this->resolveFullyQualifiedClassName($type, $context)) !== null:
+            case ($class = $context->resolveClassName($type)) !== null:
                 $type = $class;
                 if ($isArray) {
                     $type = [$class];
@@ -135,24 +162,5 @@ class MetaDataExtractor
         }
 
         return $type;
-    }
-
-    private function resolveFullyQualifiedClassName(string $identifier, Context $context) : ?string
-    {
-        if (class_exists($identifier)) {
-            return $identifier;
-        }
-
-        $identifier = explode('\\', $identifier);
-        $imports = $context->getImports();
-        if (isset($imports[$identifier[0]])) {
-            $identifier = array_merge(explode('\\', $imports[$identifier[0]]), array_slice($identifier, 1));
-        }
-        $identifier = implode('\\', $identifier);
-        if (class_exists($identifier)) {
-            return $identifier;
-        }
-
-        return null;
     }
 }

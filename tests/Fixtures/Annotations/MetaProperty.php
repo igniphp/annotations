@@ -9,7 +9,7 @@ use Igni\Annotation\Target;
 
 /**
  * @Annotation()
- * @Target(Target::TARGET_ANNOTATION)
+ * @Target(Target::TARGET_ANNOTATION, Target::TARGET_PROPERTY)
  */
 class MetaProperty
 {
@@ -18,10 +18,15 @@ class MetaProperty
      * @var string
      */
     public $name;
+
     /**
-     * @Enum("int", 'string', "float", )
+     * @Enum("int", 'string', "float", "boolean")
      * @var string
      */
-    public $type;
-    public $default;
+    public $type = 'string';
+
+    /**
+     * @var mixed
+     */
+    public $default = 'test';
 }

@@ -2,8 +2,6 @@
 
 namespace Igni\Annotation\Exception;
 
-use Igni\Exception\LogicException;
+use Igni\Exception\Exception;
 
-final class AnnotationException extends LogicException
-{
-}
+interface AnnotationException extends Exception {}

@@ -12,7 +12,7 @@ use Igni\Annotation\Target;
 class MetaClass
 {
     /**
-     * @var
+     * @var MetaProperty[]
      */
     public $properties = [];
 }

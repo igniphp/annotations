@@ -2,7 +2,6 @@
 
 namespace Igni\Annotation;
 
-use Igni\Annotation\MetaData\MetaDataExtractor;
 use Igni\Annotation\Exception\ParserException;
 use ReflectionClass;
 
@@ -57,60 +56,13 @@ class Parser
 
     ];
 
-    private const BUILT_IN = [
-        'Annotation' => Annotation::class,
-        'Enum' => Enum::class,
-        'Required' => Required::class,
-        'Target' => Target::class,
-        'NoValidate' => NoValidate::class,
-    ];
-
     private $ignoreNotImported = false;
     private $ignored = [];
-    private $autoloadNamespaces = [];
-    private $metaDataExtractor;
-
-    private $metaData = [
-        Annotation::class => [
-            'is_annotation' => true,
-            'validate' => false,
-            'has_constructor' => false,
-            'properties' => [],
-        ],
-        Enum::class => [
-            'is_annotation' => true,
-            'validate' => false,
-            'has_constructor' => false,
-            'properties' => [],
-        ],
-        NoValidate::class => [
-            'is_annotation' => true,
-            'validate' => false,
-            'has_constructor' => false,
-            'properties' => [],
-        ],
-        Target::class => [
-            'is_annotation' => true,
-            'validate' => false,
-            'has_constructor' => false,
-            'properties' => [],
-        ],
-        Required::class => [
-            'is_annotation' => true,
-            'validate' => false,
-            'has_constructor' => false,
-            'properties' => [],
-        ],
-    ];
+    private $metaData = [];
 
     public function __construct()
     {
-        $this->metaDataExtractor = new MetaDataExtractor($this);
-    }
 
-    public function registerNamespace(string $namespace, string $alias) : void
-    {
-        $this->autoloadNamespaces[$alias] = $namespace;
     }
 
     public function addIgnore(string $name) : void
@@ -179,7 +131,7 @@ class Parser
             return null;
         }
 
-        $annotationClass = $this->resolveFullyQualifiedClassName($identifier, $context);
+        $annotationClass = $context->resolveClassName($identifier);
 
         if ($annotationClass === null) {
             if ($this->ignoreNotImported) {
@@ -301,7 +253,7 @@ class Parser
         if (strpos($constant, '::') !== false) {
             $constant = explode('::', $constant);
 
-            $class = $this->resolveFullyQualifiedClassName($constant[0], $context);
+            $class = $context->resolveClassName($constant[0]);
             if ($constant[1] === 'class' && $class) {
                 return $class;
             }
@@ -349,33 +301,6 @@ class Parser
         }
 
         return $this->metaData[$annotationClass] = $this->metaDataExtractor->extract($annotationReflection, $context);
-    }
-
-    private function resolveFullyQualifiedClassName(string $identifier, Context $context) : ?string
-    {
-        if (isset(self::BUILT_IN[$identifier])) {
-            return self::BUILT_IN[$identifier];
-        }
-
-        if (class_exists($identifier)) {
-            return $identifier;
-        }
-
-        if (class_exists($context->getNamespace() . '\\' . $identifier)) {
-            return $context->getNamespace() . '\\' . $identifier;
-        }
-
-        $identifier = explode('\\', $identifier);
-        $imports = $context->getImports() + $this->autoloadNamespaces;
-        if (isset($imports[$identifier[0]])) {
-            $identifier = array_merge(explode('\\', $imports[$identifier[0]]), array_slice($identifier, 1));
-        }
-        $identifier = implode('\\', $identifier);
-        if (class_exists($identifier)) {
-            return $identifier;
-        }
-
-        return null;
     }
 
     private function match(Tokenizer $tokenizer, int $type) : bool

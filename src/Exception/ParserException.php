@@ -4,10 +4,10 @@ namespace Igni\Annotation\Exception;
 
 use Igni\Annotation\Context;
 use Igni\Annotation\Token;
-use LogicException;
+use Igni\Exception\LogicException;
 use Throwable;
 
-final class ParserException extends LogicException
+final class ParserException extends LogicException implements AnnotationException
 {
     public static function forUnexpectedToken(Token $token, Context $context) : Throwable
     {

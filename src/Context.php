@@ -9,6 +9,14 @@ use ReflectionProperty;
 
 class Context
 {
+    private const BUILT_IN_ANNOTATIONS = [
+        'Annotation' => Annotation::class,
+        'Enum' => Enum::class,
+        'Required' => Required::class,
+        'Target' => Target::class,
+        'NoValidate' => NoValidate::class,
+    ];
+
     /**
      * @var string
      */
@@ -56,6 +64,33 @@ class Context
     public function getImports() : array
     {
         return $this->imports;
+    }
+
+    public function resolveClassName(string $identifier) : ?string
+    {
+        if (isset(self::BUILT_IN_ANNOTATIONS[$identifier])) {
+            return self::BUILT_IN_ANNOTATIONS[$identifier];
+        }
+
+        if (class_exists($identifier)) {
+            return $identifier;
+        }
+
+        if (class_exists($this->getNamespace() . '\\' . $identifier)) {
+            return $this->getNamespace() . '\\' . $identifier;
+        }
+
+        $identifier = explode('\\', $identifier);
+        $imports = $this->getImports();
+        if (isset($imports[$identifier[0]])) {
+            $identifier = array_merge(explode('\\', $imports[$identifier[0]]), array_slice($identifier, 1));
+        }
+        $identifier = implode('\\', $identifier);
+        if (class_exists($identifier)) {
+            return $identifier;
+        }
+
+        return null;
     }
 
     public function __toString() : string
