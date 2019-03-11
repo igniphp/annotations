@@ -3,7 +3,8 @@
 namespace IgniTest\Annotation;
 
 use Igni\Annotation\ReflectorImports;
-use IgniTest\Annotation\Fixtures\Annotations\EnumExample;
+use IgniTest\Annotation\Fixtures\Annotations\MetaClass;
+use IgniTest\Annotation\Fixtures\Annotations\SimpleAnnotation;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionProperty;
@@ -13,11 +14,11 @@ final class ReflectorImportsTest extends TestCase
 {
     public function testReflectionClassImports() : void
     {
-       $imports = new ReflectorImports(new ReflectionClass(EnumExample::class));
+       $imports = new ReflectorImports(new ReflectionClass(MetaClass::class));
        self::assertSame(
            [
                'Annotation' => 'Igni\Annotation\Annotation',
-               'Enum' => 'Igni\Annotation\Enum',
+               'NoValidate' => 'Igni\Annotation\NoValidate',
                'Target' => 'Igni\Annotation\Target',
            ],
            $imports->getImports()
@@ -26,11 +27,11 @@ final class ReflectorImportsTest extends TestCase
 
     public function testReflectionPropertyImports() : void
     {
-        $imports = new ReflectorImports(new ReflectionProperty(EnumExample::class, 'enum'));
+        $imports = new ReflectorImports(new ReflectionProperty(MetaClass::class, 'properties'));
         self::assertSame(
             [
                 'Annotation' => 'Igni\Annotation\Annotation',
-                'Enum' => 'Igni\Annotation\Enum',
+                'NoValidate' => 'Igni\Annotation\NoValidate',
                 'Target' => 'Igni\Annotation\Target',
             ],
             $imports->getImports()
@@ -39,11 +40,12 @@ final class ReflectorImportsTest extends TestCase
 
     public function testReflectionMethodImports() : void
     {
-        $imports = new ReflectorImports(new ReflectionMethod(EnumExample::class, 'getValues'));
+        $imports = new ReflectorImports(new ReflectionMethod(SimpleAnnotation::class, 'getAttribute'));
         self::assertSame(
             [
                 'Annotation' => 'Igni\Annotation\Annotation',
                 'Enum' => 'Igni\Annotation\Enum',
+                'NoValidate' => 'Igni\Annotation\NoValidate',
                 'Target' => 'Igni\Annotation\Target',
             ],
             $imports->getImports()

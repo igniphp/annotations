@@ -17,6 +17,15 @@ class Attribute
         $this->required = $required;
     }
 
+    public function getType() : string
+    {
+        if (is_array($this->type)) {
+            return end($this->type) . '[]';
+        }
+
+        return $this->type;
+    }
+
     public function disableValidation() : bool
     {
         $this->validate = false;

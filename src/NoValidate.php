@@ -11,8 +11,5 @@ namespace Igni\Annotation;
  */
 class NoValidate
 {
-    /**
-     * @var boolean
-     */
-    public $value;
+    // Intentionally left blank.
 }

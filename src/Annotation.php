@@ -5,7 +5,7 @@ namespace Igni\Annotation;
 /**
  * Indicates that class should be treat as annotation.
  *
- * @Annotation
+ * @Annotation()
  * @Target(Target::TARGET_CLASS)
  */
 class Annotation

@@ -4,7 +4,7 @@ namespace IgniTest\Annotation;
 
 use Igni\Annotation\Annotation;
 use Igni\Annotation\Context;
-use Igni\Annotation\Enum;
+use Igni\Annotation\NoValidate;
 use Igni\Annotation\Parser;
 use Igni\Annotation\Target;
 use IgniTest\Annotation\Fixtures\Annotations\AnnotatedClass;
@@ -24,9 +24,8 @@ final class ParserTest extends TestCase
         self::assertCount(3, $annotations);
         self::assertInstanceOf(Annotation::class, $annotations[0]);
         self::assertInstanceOf(Target::class, $annotations[1]);
-        self::assertInstanceOf(Enum::class, $annotations[2]);
+        self::assertInstanceOf(NoValidate::class, $annotations[2]);
         self::assertSame([Target::TARGET_ALL], $annotations[1]->value);
-        self::assertSame([1, 2, 3], $annotations[2]->value);
     }
 
     public function testParseCustomAnnotation() : void

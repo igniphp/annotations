@@ -3,7 +3,7 @@
 namespace Igni\Annotation;
 
 use Igni\Annotation\Exception\ParserException;
-use ReflectionClass;
+use Igni\Annotation\MetaData\MetaData;
 
 class Parser
 {
@@ -59,11 +59,6 @@ class Parser
     private $ignoreNotImported = false;
     private $ignored = [];
     private $metaData = [];
-
-    public function __construct()
-    {
-
-    }
 
     public function addIgnore(string $name) : void
     {
@@ -140,11 +135,8 @@ class Parser
             throw ParserException::forUnknownAnnotationClass($identifier, $context);
         }
 
-
         $metaData = $this->getMetaData($annotationClass, $context);
-
-
-        if (!$metaData['has_constructor']) {
+        if (!$metaData->hasConstructor()) {
             $annotation = new $annotationClass();
             $valueArgs = [];
             foreach ($arguments as $key => $value) {
@@ -160,7 +152,7 @@ class Parser
                 $annotation->value = $valueArgs;
             }
         } else {
-            $annotation = new $annotationClass($arguments);
+            $annotation = new $annotationClass($arguments, $metaData);
         }
 
         return $annotation;
@@ -289,18 +281,18 @@ class Parser
         return $array;
     }
 
-    private function getMetaData(string $annotationClass, Context $context) : array
+    private function getMetaData(string $annotationClass, Context $context) : MetaData
     {
         if (isset($this->metaData[$annotationClass])) {
             return $this->metaData[$annotationClass];
         }
 
-        $annotationReflection = new ReflectionClass($annotationClass);
-        if (strpos($annotationReflection->getDocComment(), '@Annotation') === false) {
-            throw ParserException::forUsingNonAnnotationClassAsAnnotation($annotationClass, $context);
+        $metaData = new MetaData($annotationClass, $this);
+        if (!$metaData->isAnnotation()) {
+            throw ParserException::forUsingNonAnnotationClassAsAnnotation($metaData->getClass(), $context);
         }
 
-        return $this->metaData[$annotationClass] = $this->metaDataExtractor->extract($annotationReflection, $context);
+        return $this->metaData[$annotationClass] = $metaData;
     }
 
     private function match(Tokenizer $tokenizer, int $type) : bool

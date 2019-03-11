@@ -4,12 +4,12 @@ namespace Igni\Annotation\MetaData;
 
 use Igni\Annotation\Annotation;
 use Igni\Annotation\Enum;
+use Igni\Annotation\Exception\MetaDataException;
 use Igni\Annotation\NoValidate;
 use Igni\Annotation\Required;
 use Igni\Annotation\Target;
 use Igni\Annotation\Context;
 use Igni\Annotation\Parser;
-use Igni\Annotation\Exception\ParserException;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -27,8 +27,12 @@ class MetaData
     private $target = [Target::TARGET_ALL];
     private $validate = true;
     private $hasConstructor = false;
-    private $isAnnotation = false;
+    private $isAnnotation = true;
     private $className;
+    /**
+     * @var Attribute[]
+     */
+    private $attributes = [];
 
     public function __construct(string $class, Parser $parser = null)
     {
@@ -45,10 +49,59 @@ class MetaData
         $this->collect($reflection);
     }
 
+    public function getClass() : string
+    {
+        return $this->className;
+    }
+
+    public function isAnnotation() : bool
+    {
+        return $this->isAnnotation;
+    }
+
+    public function hasConstructor() : bool
+    {
+        return $this->hasConstructor;
+    }
+
+    public function hasAttribute(string $name) : bool
+    {
+        return isset($this->attributes[$name]);
+    }
+
+    public function getAttributes() : array
+    {
+        return $this->attributes;
+    }
+
+    public function getAttribute(string $name) : Attribute
+    {
+        if (!$this->hasAttribute($name)) {
+            throw MetaDataException::forUndefinedAttribute($this, $name);
+        }
+
+        return $this->attributes[$name];
+    }
+
+    public function validateTarget(string $target) : bool
+    {
+        return in_array(Target::TARGET_ALL, $this->target) || in_array($target, $this->target);
+    }
+
+    public function validateAttributes(array $data) : bool
+    {
+        foreach ($this->attributes as $name => $attribute) {
+            if (!isset($data[$name])) {
+                if ($attribute->isRequired()) {
+                    return false;
+                }
+            }
+        }
+    }
+
     private function collect(ReflectionClass $class) : void
     {
         $this->className = $class->getName();
-        $this->classNamespace = $class->getNamespaceName();
         $this->hasConstructor = $class->getConstructor() !== null;
 
         $this->collectClassMeta($class);
@@ -56,10 +109,11 @@ class MetaData
 
     private function collectClassMeta(ReflectionClass $class)
     {
+        $this->isAnnotation = false;
         $annotations = $this->parser->parse($class->getDocComment(), $this->context);
         foreach ($annotations as $annotation) {
             switch (get_class($annotation)) {
-                case Annotation ::class:
+                case Annotation::class:
                     $this->isAnnotation = true;
                     break;
                 case Target::class:
@@ -70,16 +124,15 @@ class MetaData
                         }
                     }
                     if (!$valid) {
-                        throw ParserException::forPropertyValidationFailure(
-                            $this->context,
-                            ['enum' => Target::TARGETS],
-                            $annotation->value
+                        throw MetaDataException::forInvalidTarget(
+                            $annotation->value,
+                            $this->context
                         );
                     }
-                    $metaData['target'] = $annotation->value;
+                    $this->target = $annotation->value;
                     break;
                 case NoValidate::class:
-                    $metaData['validate'] = (bool) $annotation->value;
+                    $this->validate = false;
                     break;
             }
         }
@@ -123,13 +176,18 @@ class MetaData
         if ($enum) {
             $attribute->enumerate($enum);
         }
-        $metaData['properties'][$name] = $attribute;
+
+        $this->attributes[$name] = $attribute;
     }
 
 
     private function parseDeclaredType(string $docComment, Context $context)
     {
-        preg_match('/\@var\s+?([^\[\n\*]+)(\[\s*?\])?/', $docComment, $matches);
+        preg_match('/@var\s+([^\*\n\[]+)\s*?(\[\s*?\])?/', $docComment, $matches);
+        if (!isset($matches[1])) {
+            return 'mixed';
+        }
+
         $type = trim($matches[1]);
         $isArray = isset($matches[2]);
         switch (true) {
