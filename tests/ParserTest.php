@@ -41,7 +41,7 @@ final class ParserTest extends TestCase
         self::assertInstanceOf(MetaProperty::class, $annotation->properties[0]);
         self::assertSame('testInt', $annotation->properties[0]->name);
         self::assertSame('int', $annotation->properties[0]->type);
-        self::assertSame('test', $annotation->properties[0]->default);
+        self::assertSame([], $annotation->properties[0]->default);
         self::assertInstanceOf(MetaProperty::class, $annotation->properties[1]);
     }
 }

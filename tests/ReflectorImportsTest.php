@@ -19,6 +19,7 @@ final class ReflectorImportsTest extends TestCase
            [
                'Annotation' => 'Igni\Annotation\Annotation',
                'NoValidate' => 'Igni\Annotation\NoValidate',
+               'Required' => 'Igni\Annotation\Required',
                'Target' => 'Igni\Annotation\Target',
            ],
            $imports->getImports()
@@ -32,6 +33,7 @@ final class ReflectorImportsTest extends TestCase
             [
                 'Annotation' => 'Igni\Annotation\Annotation',
                 'NoValidate' => 'Igni\Annotation\NoValidate',
+                'Required' => 'Igni\Annotation\Required',
                 'Target' => 'Igni\Annotation\Target',
             ],
             $imports->getImports()

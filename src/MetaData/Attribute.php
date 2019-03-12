@@ -72,7 +72,7 @@ class Attribute
             return in_array($value, $this->enum);
         }
 
-        if (!$this->validateType($value, $this->type)) {
+        if (!$this->validateType($this->type, $value)) {
             return false;
         }
 
@@ -107,12 +107,12 @@ class Attribute
                     }
                 }
                 return true;
-            case class_exists($type):
+            case is_string($type) && class_exists($type):
                 return $value instanceof $type;
 
             // Ignore unknown type annotation
             default:
-                return true;
+                return false;
         }
     }
 }
