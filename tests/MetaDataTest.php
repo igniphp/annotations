@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class MetaDataTest extends TestCase
 {
-    public function testSimpleAnnotation() : void
+    public function testCollectFromSimpleAnnotation() : void
     {
         $meta = new MetaData(SimpleAnnotation::class);
         self::assertTrue($meta->isAnnotation());
@@ -18,12 +18,13 @@ final class MetaDataTest extends TestCase
         self::assertSame('string', $meta->getAttribute('attribute')->getType());
     }
 
-    public function testExtendedAnnotation() : void
+    public function testCollectFromExtendedAnnotation() : void
     {
         $meta = new MetaData(MetaClass::class);
         self::assertTrue($meta->hasAttribute('properties'));
         self::assertCount(1, $meta->getAttributes());
         self::assertSame(MetaProperty::class . '[]', $meta->getAttribute('properties')->getType());
+        self::assertTrue($meta->getAttribute('properties')->isRequired());
     }
 
 }

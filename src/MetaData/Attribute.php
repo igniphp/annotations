@@ -6,6 +6,7 @@ class Attribute
 {
     private $name;
     private $required;
+    private $default;
     private $type;
     private $enum;
     private $validate = true;

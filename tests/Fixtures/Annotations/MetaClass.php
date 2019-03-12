@@ -4,6 +4,7 @@ namespace IgniTest\Annotation\Fixtures\Annotations;
 
 use Igni\Annotation\Annotation;
 use Igni\Annotation\NoValidate;
+use Igni\Annotation\Required;
 use Igni\Annotation\Target;
 
 /**
@@ -14,7 +15,13 @@ use Igni\Annotation\Target;
 class MetaClass
 {
     /**
+     * @Required
      * @var MetaProperty[]
      */
     public $properties = [];
+
+    /**
+     * @var string
+     */
+    public $name = 'DefaultName';
 }

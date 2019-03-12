@@ -161,10 +161,10 @@ class MetaData
                     $enum = $annotation->value;
                     break;
                 case Required::class:
-                    $required = (bool) $annotation->value;
+                    $required = true;
                     break;
                 case NoValidate::class:
-                    $validate = (bool) $annotation->value;
+                    $validate = false;
                     break;
             }
         }
