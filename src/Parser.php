@@ -137,6 +137,9 @@ class Parser
 
         $metaData = $this->getMetaData($annotationClass, $context);
         if (!$metaData->hasConstructor()) {
+            if ($metaData->validateAttributes($arguments)) {
+
+            }
             $annotation = new $annotationClass();
             $valueArgs = [];
             foreach ($arguments as $key => $value) {

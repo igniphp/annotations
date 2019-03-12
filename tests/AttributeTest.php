@@ -35,7 +35,7 @@ final class AttributeTest extends TestCase
         return [
             [
                 new Attribute('testValidInteger', 'int'),
-                [1, 2, 3, 1200, 1211],
+                [-1, 2, 3, 1200, 1211],
             ],
             [
                 new Attribute('testValidString', 'string'),

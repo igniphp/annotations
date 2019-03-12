@@ -2,7 +2,7 @@
 
 namespace Igni\Annotation\MetaData;
 
-class Attribute
+final class Attribute
 {
     private $name;
     private $required;

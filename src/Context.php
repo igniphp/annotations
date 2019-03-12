@@ -7,7 +7,7 @@ use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionProperty;
 
-class Context
+final class Context
 {
     private const BUILT_IN_ANNOTATIONS = [
         'Annotation' => Annotation::class,

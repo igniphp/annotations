@@ -13,7 +13,7 @@ use Igni\Annotation\Parser;
 use ReflectionClass;
 use ReflectionProperty;
 
-class MetaData
+final class MetaData
 {
     public const BUILT_IN = [
         Annotation::class => 1,
@@ -33,6 +33,7 @@ class MetaData
      * @var Attribute[]
      */
     private $attributes = [];
+    private $lastFailedAttribute;
 
     public function __construct(string $class, Parser $parser = null)
     {
@@ -93,12 +94,14 @@ class MetaData
         foreach ($this->attributes as $name => $attribute) {
             if (!isset($data[$name])) {
                 if ($attribute->isRequired()) {
+                    $this->lastFailedAttribute = $attribute;
                     return false;
                 }
                 continue;
             }
 
             if (!$attribute->validate($data[$name])) {
+                $this->lastFailedAttribute = $attribute;
                 return false;
             }
         }

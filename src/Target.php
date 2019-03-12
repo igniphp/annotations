@@ -10,12 +10,12 @@ namespace Igni\Annotation;
  */
 class Target
 {
-    public const TARGET_ALL = 'ALL';
-    public const TARGET_CLASS = 'CLASS';
-    public const TARGET_METHOD = 'METHOD';
-    public const TARGET_FUNCTION = 'FUNCTION';
-    public const TARGET_PROPERTY = 'PROPERTY';
-    public const TARGET_ANNOTATION = 'ANNOTATION';
+    public const TARGET_ALL = 'all';
+    public const TARGET_CLASS = 'class';
+    public const TARGET_METHOD = 'method';
+    public const TARGET_FUNCTION = 'function';
+    public const TARGET_PROPERTY = 'property';
+    public const TARGET_ANNOTATION = 'annotation';
 
     public const TARGETS = [
         self::TARGET_ALL,
@@ -38,6 +38,4 @@ class Target
      * )
      */
     public $value;
-
-
 }
