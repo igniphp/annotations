@@ -507,6 +507,88 @@ final class TokenizerTest extends TestCase
                     ],
                 ],
             ],
+            [
+                "@Enum('a', 'b', 'c')",
+                [
+                    [
+                        'value' => '@',
+                        'type' => Token::T_AT,
+                    ],
+                    [
+                        'value' => 'Enum',
+                        'type' => Token::T_IDENTIFIER,
+                    ],
+                    [
+                        'value' => '(',
+                        'type' => Token::T_OPEN_PARENTHESIS,
+                    ],
+                    [
+                        'value' => 'a',
+                        'type' => Token::T_STRING,
+                    ],
+                    [
+                        'value' => ',',
+                        'type' => Token::T_COMMA,
+                    ],
+                    [
+                        'value' => 'b',
+                        'type' => Token::T_STRING,
+                    ],
+                    [
+                        'value' => ',',
+                        'type' => Token::T_COMMA,
+                    ],
+                    [
+                        'value' => 'c',
+                        'type' => Token::T_STRING,
+                    ],
+                    [
+                        'value' => ')',
+                        'type' => Token::T_CLOSE_PARENTHESIS,
+                    ],
+                ]
+            ],
+            [
+                '@Enum("a", "b", "c")',
+                [
+                    [
+                        'value' => '@',
+                        'type' => Token::T_AT,
+                    ],
+                    [
+                        'value' => 'Enum',
+                        'type' => Token::T_IDENTIFIER,
+                    ],
+                    [
+                        'value' => '(',
+                        'type' => Token::T_OPEN_PARENTHESIS,
+                    ],
+                    [
+                        'value' => 'a',
+                        'type' => Token::T_STRING,
+                    ],
+                    [
+                        'value' => ',',
+                        'type' => Token::T_COMMA,
+                    ],
+                    [
+                        'value' => 'b',
+                        'type' => Token::T_STRING,
+                    ],
+                    [
+                        'value' => ',',
+                        'type' => Token::T_COMMA,
+                    ],
+                    [
+                        'value' => 'c',
+                        'type' => Token::T_STRING,
+                    ],
+                    [
+                        'value' => ')',
+                        'type' => Token::T_CLOSE_PARENTHESIS,
+                    ],
+                ]
+            ],
         ];
     }
 }

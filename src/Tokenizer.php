@@ -11,7 +11,7 @@ final class Tokenizer implements Iterator
 {
     private const PATTERNS = [
         // String, single quoted or double quoted with escape support
-        '("(?:\\\"|[^"])+"|\'(?:\\\'|[^\'])+\')',
+        '("(?:\\\"|[^"])+"|\'(?:\\\\\'|[^\'])+\')',
         // Identifier or const
         '([a-z_\\\][a-z0-9_\:\\\]*[a-z_][a-z0-9_]*)',
         // Integer or float

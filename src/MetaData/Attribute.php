@@ -6,7 +6,6 @@ class Attribute
 {
     private $name;
     private $required;
-    private $default;
     private $type;
     private $enum;
     private $validate = true;
@@ -27,7 +26,7 @@ class Attribute
         return $this->type;
     }
 
-    public function disableValidation() : bool
+    public function disableValidation() : void
     {
         $this->validate = false;
     }
@@ -53,23 +52,24 @@ class Attribute
             return true;
         }
 
-        if ($this->required && $value === null) {
-            return false;
-        }
-
-        if ($value === null) {
+        if (!$this->required && $value === null) {
             return true;
         }
 
+        if ($value === null) {
+            return false;
+        }
+
         if ($this->isEnum()) {
-            if (!is_array($value)) {
-                $value = [$value];
-            }
-            foreach ($value as $item) {
-                if (!in_array($item, $this->enum)) {
-                    return false;
+            if (is_array($this->type)) {
+                foreach ($value as $item) {
+                    if (!in_array($item, $this->enum)) {
+                        return false;
+                    }
                 }
+                return true;
             }
+            return in_array($value, $this->enum);
         }
 
         if (!$this->validateType($value, $this->type)) {

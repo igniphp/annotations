@@ -4,6 +4,7 @@ namespace IgniTest\Annotation\Fixtures\Annotations;
 
 use Igni\Annotation\Annotation;
 use Igni\Annotation\Enum;
+use Igni\Annotation\NoValidate;
 use Igni\Annotation\Required;
 use Igni\Annotation\Target;
 
@@ -26,7 +27,8 @@ class MetaProperty
     public $type = 'string';
 
     /**
-     * @var mixed
+     * @NoValidate
+     * @var MetaClass[]
      */
-    public $default = 'test';
+    public $default = [];
 }

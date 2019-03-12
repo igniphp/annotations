@@ -95,8 +95,14 @@ class MetaData
                 if ($attribute->isRequired()) {
                     return false;
                 }
+                continue;
+            }
+
+            if (!$attribute->validate($data[$name])) {
+                return false;
             }
         }
+        return true;
     }
 
     private function collect(ReflectionClass $class) : void
@@ -170,6 +176,7 @@ class MetaData
         }
 
         $attribute = new Attribute($name, $type, $required);
+
         if (!$validate) {
             $attribute->disableValidation();
         }
