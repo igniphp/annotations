@@ -72,7 +72,7 @@ final class MetaDataTest extends TestCase
     {
         $meta = new MetaData(SimpleAnnotation::class);
         self::assertTrue($meta->validateAttributes([]));
-        self::assertFalse($meta->validateAttributes(['attribute' => 1]));
+        self::assertTrue($meta->validateAttributes(['attribute' => 1]));
         self::assertTrue($meta->validateAttributes(['attribute' => 'a']));
         self::assertTrue($meta->validateAttributes(['attribute' => 'b']));
         self::assertTrue($meta->validateAttributes(['attribute' => 'c']));

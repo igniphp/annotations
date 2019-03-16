@@ -17,6 +17,11 @@ final class Attribute
         $this->required = $required;
     }
 
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
     public function getType() : string
     {
         if (is_array($this->type)) {

@@ -136,9 +136,15 @@ class Parser
         }
 
         $metaData = $this->getMetaData($annotationClass, $context);
-        if (!$metaData->hasConstructor()) {
-            if ($metaData->validateAttributes($arguments)) {
 
+        $target = $nested ? Target::TARGET_ANNOTATION : $context->getTarget();
+        if (!$metaData->validateTarget($target)) {
+            throw ParserException::forInvalidTarget($context, $target, $annotationClass);
+        }
+
+        if (!$metaData->hasConstructor()) {
+            if (!$metaData->validateAttributes($arguments)) {
+                throw ParserException::forInvalidAttributeValue($context, $annotationClass, $metaData->getFailedAttribute());
             }
             $annotation = new $annotationClass();
             $valueArgs = [];

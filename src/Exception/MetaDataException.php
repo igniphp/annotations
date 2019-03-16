@@ -17,4 +17,9 @@ final class MetaDataException extends LogicException implements AnnotationExcept
     {
         return new self("Annotation class {$metaData->getClass()} defines no attribute {$attribute}.");
     }
+
+    public static function forUnresolvableFailedAttribute(MetaData $metaData) : self
+    {
+        return new self("Could not get last failed attribute from {$metaData->getClass()}");
+    }
 }

@@ -22,17 +22,50 @@ final class MetaData
         Enum::class => 1,
         NoValidate::class => 1,
     ];
+
+    /**
+     * @var Parser
+     */
     private $parser;
+
+    /**
+     * @var Context
+     */
     private $context;
-    private $target = [Target::TARGET_ALL];
+
+    /**
+     * @var array
+     */
+    private $validTargets = [Target::TARGET_ALL];
+
+    /**
+     * @var bool
+     */
     private $validate = true;
+
+    /**
+     * @var bool
+     */
     private $hasConstructor = false;
+
+    /**
+     * @var bool
+     */
     private $isAnnotation = true;
+
+    /**
+     * @var string
+     */
     private $className;
+
     /**
      * @var Attribute[]
      */
     private $attributes = [];
+
+    /**
+     * @var Attribute|null
+     */
     private $lastFailedAttribute;
 
     public function __construct(string $class, Parser $parser = null)
@@ -86,11 +119,17 @@ final class MetaData
 
     public function validateTarget(string $target) : bool
     {
-        return in_array(Target::TARGET_ALL, $this->target) || in_array($target, $this->target);
+        return in_array(Target::TARGET_ALL, $this->validTargets) || in_array($target, $this->validTargets);
     }
 
     public function validateAttributes(array $data) : bool
     {
+        if (!$this->validate) {
+            return true;
+        }
+
+        $this->lastFailedAttribute = null;
+
         foreach ($this->attributes as $name => $attribute) {
             if (!isset($data[$name])) {
                 if ($attribute->isRequired()) {
@@ -106,6 +145,20 @@ final class MetaData
             }
         }
         return true;
+    }
+
+    public function hasFailedAttribute() : bool
+    {
+        return null !== $this->lastFailedAttribute;
+    }
+
+    public function getFailedAttribute() : Attribute
+    {
+        if (!$this->hasFailedAttribute()) {
+            throw MetaDataException::forUnresolvableFailedAttribute($this);
+        }
+
+        return $this->lastFailedAttribute;
     }
 
     private function collect(ReflectionClass $class) : void
@@ -138,7 +191,7 @@ final class MetaData
                             $this->context
                         );
                     }
-                    $this->target = $annotation->value;
+                    $this->validTargets = $annotation->value;
                     break;
                 case NoValidate::class:
                     $this->validate = false;
